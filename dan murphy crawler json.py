@@ -2,9 +2,7 @@ from bs4 import BeautifulSoup
 from tornado import ioloop, httpclient
 from random import randint
 import re
-from selenium import webdriver
-from requests_html import HTMLSession
-
+import json
 
 i = 0
 
@@ -30,33 +28,28 @@ def get_standard_drinks(html):
     return True
 
 def save_to_csv(html,url):
-    print(html)
     #regexshit = re.sub(r'[\\/*?:"<>|]',"",data[3])
     #print(to_standard_characters(file_name)) #doesn't suppose Non-BMP characters without above code
 
     # parse the html using beautiful soup and store in variable `soup`
+    result = json.loads(html)['Products']
+    per_bottle_cost = result[0]['Prices']['singleprice']['Value']
+    per_case_of_6 = result[0]['Prices']['caseprice']['Value']
+    additional_details = result[0]['AdditionalDetails'] # result is now a dict
+    size = additional_details[5]['Value']
+    alcohol_percentage = additional_details[6]['Value']
+    standard_drinks = additional_details[9]['Value']
+    category = additional_details[11]['Value']
     
-    soup = BeautifulSoup(html, 'html.parser')
-    try:
-        drink_data = soup.findAll("li", { "class" : "list--details_item ng-star-inserted" })
-        if drink_data:
-            #print(drink_data)
-            for x in drink_data:
-                y = x.find("span",recursive=False)
-                print(y.text, y.next_sibling.text)
-            
-    except:
-        print("Couldn't find data",url)
-    
-    standard_drinks = str(randint(1,40))
-    cost = str(randint(3,100))
-    price_per_standard_drink = str(int(cost)/int(standard_drinks))
+    print(per_bottle_cost,per_case_of_6,size,alcohol_percentage,standard_drinks,category,url)
+    price_per_standard_drink = str(int(per_bottle_cost)/int(standard_drinks))
     file_name = "data.csv"
     full_path = "data/" + file_name
-    data = (standard_drinks,cost,price_per_standard_drink,url,"\n")
+    data = (str(per_bottle_cost),str(per_case_of_6),str(price_per_standard_drink),size,alcohol_percentage,standard_drinks,category,url)
+    print(data)
     data_line = ",".join(data)
     with open(full_path, "w", encoding="utf-8") as data_csv:
-        data_csv.write(data_line)
+        data_csv.write(data_line+"\n")
 
 def handle_request_index(response):
     if response.code == 599:
@@ -72,7 +65,5 @@ def handle_request_index(response):
         i -= 1
         if i == 0:
             ioloop.IOLoop.instance().stop()
-        #process into fetch list
-        #insitiate all with content handler (max client 10?)
 
 get_info()
