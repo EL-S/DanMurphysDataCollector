@@ -1,5 +1,5 @@
 categories = ["red-wine","white-wine","champagne-sparkling","whisky","spirits","beer","cider","fortified-wine"]
-
+category_pages = ["","","","","","","",""]
 links = []
 
 

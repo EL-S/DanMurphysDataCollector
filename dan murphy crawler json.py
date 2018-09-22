@@ -61,6 +61,9 @@ def save_to_csv(html,url):
                 standard_drinks = standard_drinks.split("x")
                 standard_drinks = float(standard_drinks[0])*float(standard_drinks[1])
                 print(standard_drinks,"yeet")
+            elif "(" in x['Value']:
+                standard_drinks = x['Value'].split(" ")
+                standard_drinks = float(standard_drinks[0])
             else:
                 standard_drinks = float(x['Value'][:3])
         elif x['Name'] == "webalcoholpercentage":
@@ -71,7 +74,7 @@ def save_to_csv(html,url):
                 alcohol_percentage = float(alcohol_percentage[1])
                 print(alcohol_percentage,"yeet")
             else:
-                alcohol_percentage = x['Value'][:3]
+                alcohol_percentage = x['Value'].split("%")[0]
         elif x['Name'] == "webliquorsize":
             size = x['Value']
     #print(per_bottle_cost,per_case_of_6,size,alcohol_percentage,standard_drinks,category,url)
@@ -84,6 +87,8 @@ def save_to_csv(html,url):
     except NameError:
         if size[-2:-1] == "m":
             new_size = float(size[:-2])/1000
+        elif (size[-2:]).lower() == "kg":
+            return
         else:
             new_size = float(size[:-1])
         standard_drinks = new_size * float(alcohol_percentage[:-1]) * float(0.789)
