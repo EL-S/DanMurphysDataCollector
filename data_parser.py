@@ -2,11 +2,13 @@ import json
 
 flag = False
 
-with open("data/data.json", "r", encoding="utf-8") as file:
-    raw_data = file.read()
-
-
-json_data = json.loads(raw_data)
+try:
+    with open("data/data.json", "r", encoding="utf-8") as file:
+        raw_data = file.read()
+    continue_flag = True
+except:
+    print("Run the downloader first.")
+    continue_flag = False
 
 def sanitize_percent(percent):
     if "%" in percent:
@@ -265,78 +267,81 @@ def get_url(dm_stockcode):
         url = "Unknown"
     return url
 
-#main loop for saving data below
+if continue_flag == True:
+    json_data = json.loads(raw_data)
+    
+    #main loop for saving data below
 
-for product_name in json_data:
-    for product in json_data[product_name]:
-        try:
-            dm_stockcode = "DM_"+product["PackDefaultStockCode"]
-            additionaldetails = product["Products"][0]['AdditionalDetails']
-            pricedetails = product["Products"][0]['Prices']
-            price = get_price(pricedetails)
-            #print("-------------------------------------------------")
-            standarddrinks = "Unknown"
-            size = "Unknown"
-            percent = "Unknown"
-            alcohol_type = "Unknown"
-            name = "Unknown"
-            alcohol_type2 = "Unknown"
-            alcohol_type3 = "Unknown"
-            alcohol_type4 = "Unknown"
-            reviews_amount = "0"
-            flag = False
-            for detail in additionaldetails: #details are not always in order
-                if detail['Name'] == "dm_stockcode":
-                    dm_stockcode = detail['Value']
-                if detail['Name'] == "standarddrinks":
-                    standarddrinks = detail['Value']
-                    standarddrinks = sanitize_standarddrinks(standarddrinks)
-                if detail['Name'] == "webliquorsize":
-                    size = detail['Value']
-                    size = sanitize_size(size)
-                if detail['Name'] == "producttitle":
-                    name = detail['Value']
-                if detail['Name'] == "webalcoholpercentage":
-                    percent = detail['Value']
-                    percent = sanitize_percent(percent)
-                if detail['Name'] == "webproducttype":
-                    alcohol_type = detail['Value']
-                if detail['Name'] == "webmaincategory":
-                    alcohol_type2 = detail['Value']
-                if detail['Name'] == "liquorstyle":
-                    alcohol_type3 = detail['Value']
-                if detail['Name'] == "varietal":
-                    alcohol_type4 = detail['Value']
-                if detail['Name'] == "webtotalreviewcount":
-                    reviews_amount = detail['Value']
+    for product_name in json_data:
+        for product in json_data[product_name]:
+            try:
+                dm_stockcode = "DM_"+product["PackDefaultStockCode"]
+                additionaldetails = product["Products"][0]['AdditionalDetails']
+                pricedetails = product["Products"][0]['Prices']
+                price = get_price(pricedetails)
+                #print("-------------------------------------------------")
+                standarddrinks = "Unknown"
+                size = "Unknown"
+                percent = "Unknown"
+                alcohol_type = "Unknown"
+                name = "Unknown"
+                alcohol_type2 = "Unknown"
+                alcohol_type3 = "Unknown"
+                alcohol_type4 = "Unknown"
+                reviews_amount = "0"
+                flag = False
+                for detail in additionaldetails: #details are not always in order
+                    if detail['Name'] == "dm_stockcode":
+                        dm_stockcode = detail['Value']
+                    if detail['Name'] == "standarddrinks":
+                        standarddrinks = detail['Value']
+                        standarddrinks = sanitize_standarddrinks(standarddrinks)
+                    if detail['Name'] == "webliquorsize":
+                        size = detail['Value']
+                        size = sanitize_size(size)
+                    if detail['Name'] == "producttitle":
+                        name = detail['Value']
+                    if detail['Name'] == "webalcoholpercentage":
+                        percent = detail['Value']
+                        percent = sanitize_percent(percent)
+                    if detail['Name'] == "webproducttype":
+                        alcohol_type = detail['Value']
+                    if detail['Name'] == "webmaincategory":
+                        alcohol_type2 = detail['Value']
+                    if detail['Name'] == "liquorstyle":
+                        alcohol_type3 = detail['Value']
+                    if detail['Name'] == "varietal":
+                        alcohol_type4 = detail['Value']
+                    if detail['Name'] == "webtotalreviewcount":
+                        reviews_amount = detail['Value']
+                        try:
+                            int(reviews_amount)
+                        except:
+                            print(reviews_amount)
+                price_per_standard_drink = get_price_per_standard_drink(price,standarddrinks)
+                url = get_url(dm_stockcode)
+    ##            if alcohol_type.lower() == "spirit":
+    ##                flag = True
+    ##            if alcohol_type.lower() == "beer":
+    ##                flag = True
+    ##            if alcohol_type.lower() == "wine":
+    ##                flag = True
+                if flag == True:
                     try:
-                        int(reviews_amount)
-                    except:
-                        print(reviews_amount)
-            price_per_standard_drink = get_price_per_standard_drink(price,standarddrinks)
-            url = get_url(dm_stockcode)
-##            if alcohol_type.lower() == "spirit":
-##                flag = True
-##            if alcohol_type.lower() == "beer":
-##                flag = True
-##            if alcohol_type.lower() == "wine":
-##                flag = True
-            if flag == True:
-                try:
-                    size = str(size[:-2]) #remove "mL" for google drive sorting
-                    #switch the data set below for a clean csv with review amounts
-                    data = [str(price_per_standard_drink),str(price),str(standarddrinks),str(size),str(percent),str(reviews_amount),str(alcohol_type),str(name),str(alcohol_type2),str(alcohol_type3),str(alcohol_type4),str(dm_stockcode),str(url)]
-                    #data = [str(reviews_amount),str(alcohol_type),str(alcohol_type2),str(url)]
-                    counter = 0
-                    for part in data: #remove all false commas
-                        if "," in part:
-                            data[counter] = part.replace(",","")
-                        counter += 1
-                    data_str = ",".join(data)+"\n"
-                    #print(price_per_standard_drink,price,standarddrinks,size,percent,alcohol_type,name,alcohol_type2,alcohol_type3,alcohol_type4,dm_stockcode,url)
-                    with open("data\\data.csv", "a") as file:
-                        file.write(data_str)
-                except Exception as e:
-                    print("error",e)
-        except Exception as e:
-            pass
+                        size = str(size[:-2]) #remove "mL" for google drive sorting
+                        #switch the data set below for a clean csv with review amounts
+                        data = [str(price_per_standard_drink),str(price),str(standarddrinks),str(size),str(percent),str(reviews_amount),str(alcohol_type),str(name),str(alcohol_type2),str(alcohol_type3),str(alcohol_type4),str(dm_stockcode),str(url)]
+                        #data = [str(reviews_amount),str(alcohol_type),str(alcohol_type2),str(url)]
+                        counter = 0
+                        for part in data: #remove all false commas
+                            if "," in part:
+                                data[counter] = part.replace(",","")
+                            counter += 1
+                        data_str = ",".join(data)+"\n"
+                        #print(price_per_standard_drink,price,standarddrinks,size,percent,alcohol_type,name,alcohol_type2,alcohol_type3,alcohol_type4,dm_stockcode,url)
+                        with open("data\\data.csv", "a") as file:
+                            file.write(data_str)
+                    except Exception as e:
+                        print("error",e)
+            except Exception as e:
+                pass
