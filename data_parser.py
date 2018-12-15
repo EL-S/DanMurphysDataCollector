@@ -283,6 +283,7 @@ for product_name in json_data:
             alcohol_type2 = "Unknown"
             alcohol_type3 = "Unknown"
             alcohol_type4 = "Unknown"
+            reviews_amount = "0"
             flag = False
             for detail in additionaldetails: #details are not always in order
                 if detail['Name'] == "dm_stockcode":
@@ -306,12 +307,26 @@ for product_name in json_data:
                     alcohol_type3 = detail['Value']
                 if detail['Name'] == "varietal":
                     alcohol_type4 = detail['Value']
+                if detail['Name'] == "webtotalreviewcount":
+                    reviews_amount = detail['Value']
+                    try:
+                        int(reviews_amount)
+                    except:
+                        print(reviews_amount)
             price_per_standard_drink = get_price_per_standard_drink(price,standarddrinks)
             url = get_url(dm_stockcode)
+##            if alcohol_type.lower() == "spirit":
+##                flag = True
+##            if alcohol_type.lower() == "beer":
+##                flag = True
+##            if alcohol_type.lower() == "wine":
+##                flag = True
             if flag == True:
                 try:
                     size = str(size[:-2]) #remove "mL" for google drive sorting
-                    data = [str(price_per_standard_drink),str(price),str(standarddrinks),str(size),str(percent),str(alcohol_type),str(name),str(alcohol_type2),str(alcohol_type3),str(alcohol_type4),str(dm_stockcode),str(url)]
+                    #switch the data set below for a clean csv with review amounts
+                    data = [str(price_per_standard_drink),str(price),str(standarddrinks),str(size),str(percent),str(reviews_amount),str(alcohol_type),str(name),str(alcohol_type2),str(alcohol_type3),str(alcohol_type4),str(dm_stockcode),str(url)]
+                    #data = [str(reviews_amount),str(alcohol_type),str(alcohol_type2),str(url)]
                     counter = 0
                     for part in data: #remove all false commas
                         if "," in part:
@@ -319,9 +334,9 @@ for product_name in json_data:
                         counter += 1
                     data_str = ",".join(data)+"\n"
                     #print(price_per_standard_drink,price,standarddrinks,size,percent,alcohol_type,name,alcohol_type2,alcohol_type3,alcohol_type4,dm_stockcode,url)
-                    with open("data\pps_data2.csv", "a") as file:
+                    with open("data\\data.csv", "a") as file:
                         file.write(data_str)
-                except:
-                    print("error")
-        except:
+                except Exception as e:
+                    print("error",e)
+        except Exception as e:
             pass
