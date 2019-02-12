@@ -12,9 +12,8 @@ for line in robots_text:
 
 print(product_sitemap_url)
 product_sitemap = requests.get(product_sitemap_url, headers=headers).text
-#print(product_sitemap)
-print(len('你'.encode('utf-8')))
-print(len(product_sitemap.encode('utf-8')))
+
+print("SiteMap FileSize:",len(product_sitemap.encode('utf-8')))
 
 with open("product_sitemap.xml", "w") as file:
     file.write(product_sitemap)
@@ -26,6 +25,11 @@ product_ids = []
 for child in root:
     if "product" in child[0].text:
         product_id = child[0].text.split("/")[-2]
-        product_ids.append(product_id)
+        product_ids.append("https://www.danmurphys.com.au/product/"+product_id)
 
-print(product_ids, len(product_ids))
+print("Products:",len(product_ids))
+
+with open("product_ids.txt", "w") as file:
+    file.write("\n".join(product_ids))
+
+
