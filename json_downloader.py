@@ -7,6 +7,8 @@ import re
 import json
 import os
 
+# optimise speed and add option to fix invalid data
+
 file_name = "data.json"
 directory = "data/"
 i = 0
