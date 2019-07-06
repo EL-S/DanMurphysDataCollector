@@ -2,6 +2,8 @@ import json
 
 flag = False
 
+# port to JavaScript for webuse
+
 try:
     with open("data/data.json", "r", encoding="utf-8") as file:
         raw_data = file.read()
