@@ -8,6 +8,8 @@ import json
 import os
 
 # optimise speed and add option to fix invalid data
+# create a server running this that constantly keeps track of products and price changes
+# store data in a database that the website can query using php or maybe js and API/Widget
 
 file_name = "data.json"
 directory = "data/"
