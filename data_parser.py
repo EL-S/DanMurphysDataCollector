@@ -3,6 +3,7 @@ import json
 flag = False
 
 # port to JavaScript for webuse
+# revise better methods for sanitising data
 
 try:
     with open("data/data.json", "r", encoding="utf-8") as file:
