@@ -11,6 +11,7 @@ import os
 # create a server running this that constantly keeps track of products and price changes
 # store data in a database that the website can query using php or maybe js and API/Widget
 # rate limit and comply with robots.txt
+# fix time outs and 404's
 
 file_name = "data.json"
 directory = "data/"
